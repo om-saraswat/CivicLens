@@ -17,7 +17,7 @@ export default function Navbar() {
       <nav className="w-full flex justify-between items-center px-6 py-3 bg-transparent text-white z-50">
         {/* Left: Logo and Title */}
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Org Logo" className="h-20 w-20 rounded-xl shadow-sm filter grayscale" />
+          <img src="/logo3.png" alt="Org Logo" className="h-20 w-20 rounded-xl shadow-sm filter grayscale" />
           <span className="text-2xl font-extrabold tracking-wide">Civic AI</span>
         </div>
 

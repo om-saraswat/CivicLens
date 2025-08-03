@@ -26,7 +26,7 @@ export default function SignInPage() {
     <div className="flex justify-center items-center h-screen bg-transparent text-white px-4 -mt-26">
       <div className="bg-gray-950 p-8 rounded-2xl shadow-2xl w-full max-w-sm flex flex-col items-center">
         {/* Logo */}
-        <img src="/logo.png" alt="Logo" className="w-16 h-16 mb-4" />
+        <img src="/logo3.png" alt="Logo" className="w-16 h-16 mb-4" />
 
         {/* Title */}
         <h1 className="text-2xl font-extrabold text-center mb-6">Login to Civic AI</h1>
