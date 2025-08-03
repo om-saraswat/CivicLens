@@ -27,7 +27,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-8">
+    <div className="min-h-screen bg-transparent text-white p-8">
       {/* Large User Profile Section */}
       <div className="flex flex-col items-center mb-12">
         <img 

@@ -1,15 +1,13 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Redirect to home if already logged in
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/");
@@ -25,12 +23,18 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white px-4">
-      <div className="bg-gray-950 p-8 rounded-2xl shadow-2xl w-full max-w-sm">
-        <h1 className="text-3xl font-extrabold text-center mb-6">Login to Civic AI Agent</h1>
+    <div className="flex justify-center items-center h-screen bg-transparent text-white px-4 -mt-26">
+      <div className="bg-gray-950 p-8 rounded-2xl shadow-2xl w-full max-w-sm flex flex-col items-center">
+        {/* Logo */}
+        <img src="/logo.png" alt="Logo" className="w-16 h-16 mb-4" />
+
+        {/* Title */}
+        <h1 className="text-2xl font-extrabold text-center mb-6">Login to Civic AI</h1>
+
+        {/* Google Sign-In Button */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="w-full flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 font-semibold py-2.5 px-4 rounded-lg shadow-md transition-all duration-200"
+          className="w-full flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 font-semibold py-2.5 px-4 rounded-lg shadow-md transition duration-200 mb-4"
         >
           <svg
             className="w-5 h-5"
@@ -40,8 +44,15 @@ export default function SignInPage() {
           >
             <path d="M488 261.8C488 403.3 391.6 504 248 504 110.8 504 8 401.2 8 264S110.8 24 248 24c66.9 0 122.3 24 164.1 63.1l-66.6 63.9C320.6 123.1 287.5 112 248 112c-84.2 0-152.5 70.6-152.5 157.6S163.8 427.2 248 427.2c74.3 0 122.2-42.5 131.6-102.1H248v-81.3h240C487.5 251.6 488 256.8 488 261.8z" />
           </svg>
-          Sign in with Google
+          Continue with Google
         </button>
+
+        {/* Terms & Privacy Text */}
+        <p className="text-xs text-gray-500 text-center mt-2 px-2">
+          By signing in, you agree to our{" "}
+          <a href="/terms" className="underline hover:text-gray-300">terms</a> and{" "}
+          <a href="/privacy" className="underline hover:text-gray-300">privacy policy</a>.
+        </p>
       </div>
     </div>
   );
