@@ -8,7 +8,6 @@ export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Redirect to /sign-in if not logged in
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/signin");
@@ -16,15 +15,34 @@ export default function Home() {
   }, [status, router]);
 
   if (status === "loading") {
-    return <div style={{ textAlign: "center", marginTop: 50 }}>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-600 text-lg">Loading...</p>
+      </div>
+    );
   }
 
   return (
-    <div style={{ textAlign: "center", marginTop: 50 }}>
-      <h1>Hello {session.user.name}</h1>
-      <img src={session.user.image} width={80} style={{ borderRadius: "50%" }} />
-      <p>Email: {session.user.email}</p>
-      <button onClick={() => signOut({ callbackUrl: "/signin" })}>Logout</button>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-sm text-center">
+        <div className="flex justify-center mb-4">
+          <img
+            src={session?.user?.image ?? "/default-avatar.png"}
+            alt="Profile"
+            className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+          />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">
+          Hello, {session?.user?.name}
+        </h1>
+        <p className="text-gray-500 text-sm mb-6">{session?.user?.email}</p>
+        <button
+          onClick={() => signOut({ callbackUrl: "/signin" })}
+          className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg transition"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
