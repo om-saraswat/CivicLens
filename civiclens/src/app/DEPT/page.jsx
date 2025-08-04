@@ -95,7 +95,7 @@ export default function GetDepartmentPage() {
           value={issue}
           onChange={(e) => setIssue(e.target.value)}
           placeholder="e.g., Large pothole causing traffic on the main road"
-          className="w-full p-2 rounded text-black"
+          className="w-full p-2 rounded text-white"
           rows={3}
         />
       </div>
