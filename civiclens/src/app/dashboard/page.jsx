@@ -23,7 +23,8 @@ export default function Dashboard() {
   }
 
   const handleNewComplaint = () => {
-    router.push('/');
+    router.push('/complaints/new');
+
   };
 
   return (
