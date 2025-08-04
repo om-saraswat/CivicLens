@@ -29,7 +29,7 @@ export default function SignInPage() {
         <img src="/logo3.png" alt="Logo" className="w-16 h-16 mb-4" />
 
         {/* Title */}
-        <h1 className="text-2xl font-extrabold text-center mb-6">Login to Civic AI</h1>
+        <h1 className="text-2xl font-extrabold text-center mb-6">Login to CivicLens</h1>
 
         {/* Google Sign-In Button */}
         <button
