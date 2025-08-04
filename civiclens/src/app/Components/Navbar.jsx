@@ -18,7 +18,7 @@ export default function Navbar() {
         {/* Left: Logo and Title */}
         <div className="flex items-center gap-3">
           <img src="/logo3.png" alt="Org Logo" className="h-20 w-20 rounded-xl shadow-sm filter grayscale" />
-          <span className="text-2xl font-extrabold tracking-wide">Civic AI</span>
+          <span className="text-2xl font-extrabold tracking-wide">CivicLens</span>
         </div>
 
         {/* Right: Actions */}
