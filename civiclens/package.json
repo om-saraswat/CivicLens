@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "axios": "^1.11.0",
+    "formidable": "^3.5.4",
     "googleapis": "^154.1.0",
     "lucide-react": "^0.536.0",
+    "mime": "^4.0.7",
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.0",
     "next": "15.4.5",
