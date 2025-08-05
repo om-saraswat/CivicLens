@@ -2,6 +2,9 @@
 import { google } from "googleapis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { dbConnect } from "../../../lib/mongodb";
+import Complaints from "../../../models/Complaints";
+import Users from "../../../models/Users";
 
 export async function POST(req) {
   try {
@@ -10,7 +13,34 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    const { to, subject, message } = await req.json();
+    const { to, subject, message, deptName, location } = await req.json();
+
+    // Connect to MongoDB
+    await dbConnect();
+
+    // Get or create user
+    let user = await Users.findOne({ email: session.user.email });
+    if (!user) {
+      user = await Users.create({
+        email: session.user.email,
+        name: session.user.name,
+        image: session.user.image
+      });
+    }
+
+    // Generate unique complaint number
+    const complaintNo = `CMP${Date.now()}`;
+
+    // Save complaint with user reference
+    await Complaints.create({
+      deptName,
+      deptMail: to,
+      subject,
+      description: message,
+      location,
+      complaintNo,
+      user: user._id  // Reference to user document
+    });
 
     const oauth2Client = new google.auth.OAuth2();
     oauth2Client.setCredentials({ access_token: session.accessToken });
@@ -35,7 +65,10 @@ export async function POST(req) {
       requestBody: { raw: encodedMessage },
     });
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    return new Response(JSON.stringify({ 
+      success: true, 
+      complaintNo 
+    }), { status: 200 });
   } catch (err) {
     console.error(err);
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });

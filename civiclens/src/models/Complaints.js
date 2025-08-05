@@ -7,8 +7,21 @@ const ComplaintSchema = new mongoose.Schema({
   description: { type: String, required: true },
   location: { type: String },
   complaintNo: { type: String, required: true, unique: true },
+  user: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true 
+  },
+  status: { 
+    type: String, 
+    enum: ['Pending', 'In Progress', 'Resolved'],
+    default: 'Pending'
+  },
   image: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
+
+// Create compound index for better query performance
+ComplaintSchema.index({ user: 1, complaintNo: 1 });
 
 export default mongoose.models.Complaint || mongoose.model("Complaint", ComplaintSchema);

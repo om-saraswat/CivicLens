@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function SendEmailPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setTo(searchParams.get("to") || "");
@@ -17,25 +20,35 @@ export default function SendEmailPage() {
   }, [searchParams]);
 
   const sendEmail = async () => {
+    setLoading(true);
     setStatus("Sending...");
     try {
       const res = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to, subject, message }),
+        body: JSON.stringify({
+          to,
+          subject,
+          message,
+          deptName: searchParams.get("department") || "Unknown Department",
+          location: searchParams.get("location") || "",
+        }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setStatus("✅ Email sent successfully!");
-        setTo("");
-        setSubject("");
-        setMessage("");
+        toast.success("Complaint registered successfully!");
+        // Wait for 2 seconds before redirecting
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
       } else {
-        setStatus("❌ Failed to send: " + data.error);
+        toast.error("Failed to send: " + data.error);
       }
     } catch (error) {
-      setStatus("❌ Error: " + error.message);
+      toast.error("Error: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,8 +95,9 @@ export default function SendEmailPage() {
         <button
           onClick={sendEmail}
           className="w-full py-3 mt-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-lg transition"
+          disabled={loading}
         >
-          Send Email
+          {loading ? "Sending..." : "Send Email"}
         </button>
 
         {status && (
