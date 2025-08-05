@@ -10,9 +10,12 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: "openid email profile https://www.googleapis.com/auth/gmail.send"
-        }
-      }
+          scope:
+            "openid email profile https://www.googleapis.com/auth/gmail.send",
+          access_type: "offline", // Needed to get refresh token
+          prompt: "consent", // Ensure refresh token is returned on first login
+        },
+      },
     }),
   ],
   callbacks: {
@@ -28,14 +31,21 @@ export const authOptions = {
       }
       return true;
     },
+    async jwt({ token, account, user }) {
+      // Initial sign-in
+      if (account && user) {
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token; // Save for later
+        token.expiresAt = Date.now() + account.expires_in * 1000;
+      }
+      return token;
+    },
     async session({ session, token }) {
-      session.user.email = token.email;
+      session.user.email = token.email || session.user.email;
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
       return session;
     },
-    async jwt({ token, account, user }) {
-      if (user) token.email = user.email;
-      return token;
-    }
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
