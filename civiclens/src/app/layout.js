@@ -16,6 +16,7 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800`}>
         <Providers>
           <NavbarClient />
+          
           {children}
           <Toaster position="top-center" />
         </Providers>

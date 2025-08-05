@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Sidebar from "../Components/Sidebar"
 import toast from "react-hot-toast";
 
 export default function Dashboard() {
@@ -99,6 +100,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-transparent text-white p-8">
+      
       {/* User Profile Section */}
       <div className="flex flex-col items-center mb-12">
         <img

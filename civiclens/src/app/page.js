@@ -3,8 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Sidebar from "../app/Components/Sidebar";
-
+import Sidebar from "./Components/Sidebar";
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -111,10 +110,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex bg-transparent">
-      <Sidebar />
-
-      <main className="flex-1 flex items-center justify-center px-4">
+    <div className="min-h-screen flex bg-transparent ">
+    
+      <Sidebar/>
+      <main className="flex-1 flex items-center justify-center px-4 ">
         <div className="bg-gray-950 shadow-2xl rounded-2xl p-8 w-full max-w-md text-center text-white border border-gray-800">
           <h1 className="text-3xl font-extrabold mb-6">Report an Issue</h1>
 
