@@ -2,24 +2,93 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/signin");
     }
-  }, [status, router]);
 
-  if (status === "loading") {
+    if (session?.user) {
+      fetchComplaints();
+    }
+  }, [status, router, session]);
+
+  const fetchComplaints = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/Complaints", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Important for sending cookies/session
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch complaints");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setComplaints(data.complaints);
+      } else {
+        throw new Error(data.error || "Failed to load complaints");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setError(error.message);
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  if (status === "loading" || loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-black">
-        <p className="text-gray-400 text-lg animate-pulse">
-          Loading dashboard...
-        </p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-400 text-lg">Loading your complaints...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black">
+        <div className="bg-red-900/50 border border-red-500 rounded-lg p-6 max-w-md w-full mx-4">
+          <h2 className="text-red-500 text-xl font-semibold mb-2">
+            Error Loading Complaints
+          </h2>
+          <p className="text-red-200 mb-4">{error}</p>
+          <button
+            onClick={() => fetchComplaints()}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -30,7 +99,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-transparent text-white p-8">
-      {/* Large User Profile Section */}
+      {/* User Profile Section */}
       <div className="flex flex-col items-center mb-12">
         <img
           src={session?.user?.image || "/default-avatar.png"}
@@ -41,7 +110,7 @@ export default function Dashboard() {
         <p className="text-xl text-gray-400">{session?.user?.email}</p>
       </div>
 
-      {/* Complaints Section with New Complaint Button */}
+      {/* Complaints Section */}
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-semibold text-gray-200">
@@ -57,40 +126,45 @@ export default function Dashboard() {
 
         {/* Complaints List */}
         <div className="space-y-4">
-          {/* Sample Complaints */}
-          <div className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition-colors">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-medium mb-2">
-                  Road Maintenance Issue
-                </h3>
-                <p className="text-gray-400">
-                  Pothole on Main Street needs immediate attention
-                </p>
-                <span className="inline-block mt-3 text-yellow-500">
-                  In Progress
-                </span>
-              </div>
-              <span className="text-gray-500">2 days ago</span>
+          {complaints.length === 0 ? (
+            <div className="text-center text-gray-400 py-8">
+              No complaints found. Create your first complaint!
             </div>
-          </div>
-
-          <div className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition-colors">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-medium mb-2">
-                  Street Light Malfunction
-                </h3>
-                <p className="text-gray-400">
-                  Street light flickering at Corner Avenue
-                </p>
-                <span className="inline-block mt-3 text-yellow-500">
-                  In Progress
-                </span>
+          ) : (
+            complaints.map((complaint) => (
+              <div
+                key={complaint._id}
+                className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-xl font-medium mb-2">
+                      {complaint.subject}
+                    </h3>
+                    <div className="mt-3 flex gap-4">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm ${
+                          complaint.status === "Pending"
+                            ? "bg-yellow-900 text-yellow-200"
+                            : complaint.status === "In Progress"
+                            ? "bg-blue-900 text-blue-200"
+                            : "bg-green-900 text-green-200"
+                        }`}
+                      >
+                        {complaint.status}
+                      </span>
+                      <span className="text-gray-500">
+                        #{complaint.complaintNo}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-gray-500">
+                    {formatDate(complaint.createdAt)}
+                  </span>
+                </div>
               </div>
-              <span className="text-gray-500">5 days ago</span>
-            </div>
-          </div>
+            ))
+          )}
         </div>
       </div>
     </div>
