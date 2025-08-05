@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function SendEmailPage() {
+  const searchParams = useSearchParams();
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    setTo(searchParams.get("to") || "");
+    setSubject(searchParams.get("subject") || "");
+    setMessage(searchParams.get("message") || "");
+  }, [searchParams]);
 
   const sendEmail = async () => {
     setStatus("Sending...");
@@ -45,7 +53,6 @@ export default function SendEmailPage() {
         <input
           className="w-full p-3 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           type="email"
-          placeholder="example@department.gov"
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
@@ -57,7 +64,6 @@ export default function SendEmailPage() {
         <input
           className="w-full p-3 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           type="text"
-          placeholder="Garbage on Road - CivicLens Report"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
@@ -68,13 +74,11 @@ export default function SendEmailPage() {
         </label>
         <textarea
           className="w-full p-3 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          placeholder="Describe the civic issue here..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows="6"
         />
 
-        {/* Send Button */}
         <button
           onClick={sendEmail}
           className="w-full py-3 mt-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-lg transition"
