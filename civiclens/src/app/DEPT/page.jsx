@@ -59,7 +59,6 @@ export default function GetDepartmentPage() {
         if (!res.ok) throw new Error(data.error || "Failed to fetch department info");
         setResult(data);
       } catch (parseError) {
-        // Handle invalid JSON (like <DOCTYPE html>)
         setError("Server returned invalid JSON. Check console for raw output.");
         setRawResponse(text);
         console.error("❌ Raw response from server:", text);
@@ -95,7 +94,7 @@ export default function GetDepartmentPage() {
           value={issue}
           onChange={(e) => setIssue(e.target.value)}
           placeholder="e.g., Large pothole causing traffic on the main road"
-          className="w-full p-2 rounded text-white"
+          className="w-full p-2 rounded text-white bg-gray-800"
           rows={3}
         />
       </div>
@@ -118,11 +117,20 @@ export default function GetDepartmentPage() {
       )}
 
       {result && (
-        <div className="mt-6 bg-gray-800 p-4 rounded">
-          <h2 className="text-lg font-semibold mb-2">📍 Location Info</h2>
+        <div className="mt-6 bg-gray-800 p-4 rounded space-y-4">
+          <h2 className="text-lg font-semibold">📍 Location Info</h2>
           <p><b>Address:</b> {result.address}</p>
+
+          <h2 className="text-lg font-semibold">🏢 Department Info</h2>
           <p><b>Department:</b> {result.department}</p>
           <p><b>Email:</b> {result.email}</p>
+
+          <h2 className="text-lg font-semibold">✉️ Email Complaint</h2>
+          <p><b>Subject:</b> {result.subject}</p>
+          <div>
+            <b>Body:</b>
+            <pre className="bg-gray-700 p-3 mt-1 rounded whitespace-pre-wrap break-words text-sm">{result.body}</pre>
+          </div>
         </div>
       )}
     </div>
