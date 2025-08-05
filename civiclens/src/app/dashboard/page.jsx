@@ -94,7 +94,7 @@ export default function Dashboard() {
   }
 
   const handleNewComplaint = () => {
-    router.push("/upload");
+    router.push("/");
   };
 
   return (
