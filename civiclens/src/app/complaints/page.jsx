@@ -1,9 +1,14 @@
-import React from 'react'
+"use client";
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function ComplaintsPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/dashboard");
+  }, [router]);
+
+  return null; // or a loading spinner if you want
 }
-
-export default page
