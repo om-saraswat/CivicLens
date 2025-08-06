@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "../Components/Sidebar"
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -127,47 +128,52 @@ export default function Dashboard() {
         </div>
 
         {/* Complaints List */}
-        <div className="space-y-4">
-          {complaints.length === 0 ? (
-            <div className="text-center text-gray-400 py-8">
-              No complaints found. Create your first complaint!
-            </div>
-          ) : (
-            complaints.map((complaint) => (
-              <div
-                key={complaint._id}
-                className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition-colors"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-medium mb-2">
-                      {complaint.subject}
-                    </h3>
-                    <div className="mt-3 flex gap-4">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm ${
-                          complaint.status === "Pending"
-                            ? "bg-yellow-900 text-yellow-200"
-                            : complaint.status === "In Progress"
-                            ? "bg-blue-900 text-blue-200"
-                            : "bg-green-900 text-green-200"
-                        }`}
-                      >
-                        {complaint.status}
-                      </span>
-                      <span className="text-gray-500">
-                        #{complaint.complaintNo}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-gray-500">
-                    {formatDate(complaint.createdAt)}
-                  </span>
-                </div>
+        {/* Complaints List */}
+<div className="space-y-4">
+  {complaints.length === 0 ? (
+    <div className="text-center text-gray-400 py-8">
+      No complaints found. Create your first complaint!
+    </div>
+  ) : (
+    complaints.map((complaint) => (
+      <Link
+        key={complaint._id}
+        href={`/complaints/${complaint._id}`}
+        className="block"
+      >
+        <div className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="text-xl font-medium mb-2">
+                {complaint.subject}
+              </h3>
+              <div className="mt-3 flex gap-4">
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-sm ${
+                    complaint.status === "Pending"
+                      ? "bg-yellow-900 text-yellow-200"
+                      : complaint.status === "In Progress"
+                      ? "bg-blue-900 text-blue-200"
+                      : "bg-green-900 text-green-200"
+                  }`}
+                >
+                  {complaint.status}
+                </span>
+                <span className="text-gray-500">
+                  #{complaint.complaintNo}
+                </span>
               </div>
-            ))
-          )}
+            </div>
+            <span className="text-gray-500">
+              {formatDate(complaint.createdAt)}
+            </span>
+          </div>
         </div>
+      </Link>
+    ))
+  )}
+</div>
+
       </div>
     </div>
   );
