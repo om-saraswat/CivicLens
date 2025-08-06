@@ -13,7 +13,18 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    const { to, subject, message, deptName, location } = await req.json();
+    const { to, subject, message, deptName, location, lat, lon } = await req.json();
+
+    // Debug logs
+    console.log('📧 Send Email API - Received data:', {
+      to,
+      subject,
+      deptName,
+      location,
+      lat,
+      lon,
+      messageLength: message?.length || 0
+    });
 
     // Connect to MongoDB
     await dbConnect();
@@ -32,16 +43,26 @@ export async function POST(req) {
     const complaintNo = `CMP${Date.now()}`;
 
     // Save complaint with user reference
-    await Complaints.create({
-      deptName,
+    const complaintData = {
+      deptName: deptName || "Unknown Department",
       deptMail: to,
       subject,
       description: message,
-      location,
+      location: location || "",
       complaintNo,
-      user: user._id  // Reference to user document
-    });
+      user: user._id,
+      coordinates: {
+        lat: lat || null,
+        lon: lon || null
+      }
+    };
 
+    console.log('💾 Saving complaint to database:', complaintData);
+
+    const complaint = await Complaints.create(complaintData);
+    console.log('✅ Complaint saved with ID:', complaint._id);
+
+    // Send email via Gmail API
     const oauth2Client = new google.auth.OAuth2();
     oauth2Client.setCredentials({ access_token: session.accessToken });
 
@@ -65,12 +86,18 @@ export async function POST(req) {
       requestBody: { raw: encodedMessage },
     });
 
+    console.log('📤 Email sent successfully');
+
     return new Response(JSON.stringify({ 
       success: true, 
-      complaintNo 
+      complaintNo,
+      savedDepartment: complaintData.deptName 
     }), { status: 200 });
+    
   } catch (err) {
-    console.error(err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
-  }
-}
+    console.error('❌ Send Email API Error:', err);
+    return new Response(JSON.stringify({ 
+      error: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    }), { status: 500 });
+  }}

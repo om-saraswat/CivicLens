@@ -12,16 +12,90 @@ export default function SendEmailPage() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [departmentData, setDepartmentData] = useState(null);
 
   useEffect(() => {
-    setTo(searchParams.get("to") || "");
-    setSubject(searchParams.get("subject") || "");
-    setMessage(searchParams.get("message") || "");
+    // First try URL params
+    const urlTo = searchParams.get("to");
+    const urlSubject = searchParams.get("subject");
+    const urlMessage = searchParams.get("message");
+    const urlDepartment = searchParams.get("department");
+    const urlLocation = searchParams.get("location");
+    const urlAddress = searchParams.get("address");
+    const urlLat = searchParams.get("lat");
+    const urlLon = searchParams.get("lon");
+
+    console.log('🔍 URL Parameters:', {
+      to: urlTo,
+      subject: urlSubject,
+      message: urlMessage,
+      department: urlDepartment,
+      location: urlLocation,
+      address: urlAddress,
+      lat: urlLat,
+      lon: urlLon
+    });
+
+    // If URL params exist, use them
+    if (urlTo || urlSubject || urlMessage) {
+      setTo(urlTo || "");
+      setSubject(urlSubject || "");
+      setMessage(urlMessage || "");
+      
+      // Store all department data
+      setDepartmentData({
+        department: urlDepartment || "Unknown Department",
+        email: urlTo || "",
+        address: urlAddress || urlLocation || "",
+        lat: urlLat || "",
+        lon: urlLon || ""
+      });
+    } else {
+      // Otherwise, try session storage
+      const savedDeptData = sessionStorage.getItem('departmentData');
+      console.log('💾 Session Storage Data:', savedDeptData);
+      
+      if (savedDeptData) {
+        try {
+          const deptData = JSON.parse(savedDeptData);
+          console.log('📋 Parsed Department Data:', deptData);
+          
+          setTo(deptData.email || "");
+          setSubject(deptData.subject || "");
+          setMessage(deptData.body || "");
+          setDepartmentData(deptData);
+          
+          // Clear session storage after using
+          sessionStorage.removeItem('departmentData');
+        } catch (error) {
+          console.error('❌ Error parsing session storage data:', error);
+          setDepartmentData({
+            department: "Unknown Department",
+            email: "",
+            address: "",
+            lat: "",
+            lon: ""
+          });
+        }
+      } else {
+        console.warn('⚠️ No department data found in URL params or session storage');
+        setDepartmentData({
+          department: "Unknown Department",
+          email: "",
+          address: "",
+          lat: "",
+          lon: ""
+        });
+      }
+    }
   }, [searchParams]);
 
   const sendEmail = async () => {
     setLoading(true);
     setStatus("Sending...");
+    
+    console.log('📤 Sending email with department data:', departmentData);
+    
     try {
       const res = await fetch("/api/send-email", {
         method: "POST",
@@ -30,8 +104,10 @@ export default function SendEmailPage() {
           to,
           subject,
           message,
-          deptName: searchParams.get("department") || "Unknown Department",
-          location: searchParams.get("location") || "",
+          deptName: departmentData?.department || "Unknown Department",
+          location: departmentData?.address || searchParams.get("location") || "",
+          lat: departmentData?.lat || "",
+          lon: departmentData?.lon || "",
         }),
       });
 
@@ -57,6 +133,15 @@ export default function SendEmailPage() {
         <h1 className="text-4xl font-bold text-center mb-8 text-white">
           Send CivicLens Email
         </h1>
+
+        {/* Debug Info - Remove in production */}
+        {departmentData && (
+          <div className="mb-6 p-4 bg-gray-800 rounded-lg">
+            <h3 className="text-sm font-semibold text-yellow-400 mb-2">Debug Info:</h3>
+            <p className="text-xs text-gray-300">Department: {departmentData.department}</p>
+            <p className="text-xs text-gray-300">Address: {departmentData.address}</p>
+          </div>
+        )}
 
         {/* Recipient */}
         <div className="mb-6">

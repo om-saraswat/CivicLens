@@ -56,48 +56,57 @@ export async function POST(req) {
         responseMimeType: "application/json",
       },
     });
+const prompt = `
+You are an API that generates a formal civic complaint JSON to be emailed to the correct Indian government department.
 
-    const prompt = `
-You are an AI that helps citizens report civic issues to the correct Indian government departments.
+Respond ONLY with a **valid JSON object**, and nothing else — no explanation, no formatting, no markdown.
 
-Given the issue and its location, generate a valid JSON object with the following fields only:
+Use this format:
 
 {
-  "department": "Responsible department name",
-  "email": "Official department email",
-  "address": "Resolved location for filing complaint",
-  "subject": "Subject line for the email complaint",
-  "body": "Full complaint email body to be sent to the department with details of sender"
+  "department": "e.g., MCD, NHAI, PWD, etc.",
+  "email": "official email (must end in .gov.in or .nic.in)",
+  "address": "location string",
+  "subject": "formal email subject",
+  "body": "formal complaint body in full sentences, ending with user name and email",
+  "lat": "${lat}",
+  "lon": "${lon}"
 }
 
 Rules:
-- Use formal and respectful tone in the email body.
-- Department must be accurate (like MCD, NHAI, PWD, etc.).
-- Email must be valid (gov.in, nic.in, etc.).
-- At the end of the body, include user's full name and email address as signature.
-- DO NOT add explanations, markdown, or anything outside the JSON.
+- Only valid JSON. No \`\`\`json or extra notes.
+- Wrap all keys and values in double quotes.
+- No markdown. No bullet points. No text before or after the object.
+- Make sure JSON is directly parsable with JSON.parse()
 
-Complaint Details:
-- Location: "${address}"
-- Issue: "${issueDescription}"
-- User Name: "${userName}"
-- User Email: "${userEmail}"
+Details:
+- Location: ${address}
+- Issue: ${issueDescription}
+- User: ${userName}
+- Email: ${userEmail}
 `;
 
-    const result = await model.generateContent(prompt);
-    let jsonText = result.response.text().trim();
 
-    // Remove code block formatting if present
-    if (jsonText.startsWith("```json")) {
-      jsonText = jsonText.replace(/^```json/, "").replace(/```$/, "").trim();
-    } else if (jsonText.startsWith("```")) {
-      jsonText = jsonText.replace(/^```/, "").replace(/```$/, "").trim();
-    }
+    const result = await model.generateContent(prompt);
+let jsonText = result.response.text().trim();
+
+console.log("🧠 Gemini Response:\n", jsonText); // 👈 Add this log
+
+// Remove code block formatting
+if (jsonText.startsWith("```json")) {
+  jsonText = jsonText.replace(/^```json/, "").replace(/```$/, "").trim();
+} else if (jsonText.startsWith("```")) {
+  jsonText = jsonText.replace(/^```/, "").replace(/```$/, "").trim();
+}
+
+console.log("🧾 Cleaned JSON Text:\n", jsonText); // 👈 Add this too
+
 
     // Parse the JSON
     let parsed;
     try {
       parsed = JSON.parse(jsonText);
+      
     } catch (e) {
       console.error("⚠️ AI response not valid JSON:", jsonText);
       parsed = {
@@ -112,7 +121,7 @@ Complaint Details:
 
     // Ensure address is attached
     parsed.address = address;
-
+    console.log(parsed);
     return NextResponse.json(parsed);
 
   } catch (err) {
