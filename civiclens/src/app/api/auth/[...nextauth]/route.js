@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { dbConnect } from "../../../../lib/mongodb";
 import User from "../../../../models/Users";
 
-const authOptions = {
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
