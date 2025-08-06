@@ -1,8 +1,19 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route"; // Adjust path if needed
 
 export async function POST(req) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userName = session.user.name;
+    const userEmail = session.user.email;
+
     const body = await req.json();
     const { lat, lon, issueDescription } = body;
 
@@ -56,18 +67,21 @@ Given the issue and its location, generate a valid JSON object with the followin
   "email": "Official department email",
   "address": "Resolved location for filing complaint",
   "subject": "Subject line for the email complaint",
-  "body": "Full complaint email body to be sent to the department"
+  "body": "Full complaint email body to be sent to the department with details of sender"
 }
 
 Rules:
 - Use formal and respectful tone in the email body.
 - Department must be accurate (like MCD, NHAI, PWD, etc.).
 - Email must be valid (gov.in, nic.in, etc.).
+- At the end of the body, include user's full name and email address as signature.
 - DO NOT add explanations, markdown, or anything outside the JSON.
 
 Complaint Details:
 - Location: "${address}"
 - Issue: "${issueDescription}"
+- User Name: "${userName}"
+- User Email: "${userEmail}"
 `;
 
     const result = await model.generateContent(prompt);
@@ -84,8 +98,6 @@ Complaint Details:
     let parsed;
     try {
       parsed = JSON.parse(jsonText);
-      console.log(parsed);
-      
     } catch (e) {
       console.error("⚠️ AI response not valid JSON:", jsonText);
       parsed = {
@@ -93,7 +105,7 @@ Complaint Details:
         email: "N/A",
         address,
         subject: "Complaint Regarding Public Issue",
-        body: `There is a civic issue reported at: ${address}\n\nIssue: ${issueDescription}\n\nPlease take necessary action.`,
+        body: `There is a civic issue reported at: ${address}\n\nIssue: ${issueDescription}\n\nReported by: ${userName} (${userEmail})\n\nPlease take necessary action.`,
         raw: jsonText,
       };
     }

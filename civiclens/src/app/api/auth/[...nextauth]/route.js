@@ -37,6 +37,7 @@ export const authOptions = {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token; // Save for later
         token.expiresAt = Date.now() + account.expires_in * 1000;
+        token.email = user.email; // Store email in token
       }
       return token;
     },
