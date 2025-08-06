@@ -5,17 +5,17 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
-
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
   useEffect(() => {
-      if (status === "unauthenticated") {
-        router.replace("/signin");
-      }
-    }, [status, router]);
-  
+    if (status === "unauthenticated") {
+      router.replace("/signin");
+    }
+  }, [status, router]);
+
   return (
-    <aside className="h-screen w-72 bg-transparent text-white flex flex-col items-center py-8 border-r border-gray-800">
+    <aside className="hidden md:flex h-screen w-72 bg-black-800 text-white flex-col items-center py-8 border-r border-gray-800">
       {/* User Profile */}
       <div className="flex flex-col items-center mb-8">
         <img
