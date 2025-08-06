@@ -23,20 +23,25 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-black text-white px-4">
-      <div className="bg-gray-950 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-sm flex flex-col items-center text-center">
-        {/* Logo */}
-        <img src="/logo3.png" alt="Logo" className="w-14 h-14 sm:w-16 sm:h-16 mb-4" />
+    <div className="flex justify-center items-center min-h-screen bg-black text-white px-4 ">
+      <div className="bg-gray-950 p-10 rounded-3xl w-full max-w-md flex flex-col items-center text-center space-y-6 shadow-[0_0_10px_rgba(249,249,249,0.8)] transition-all duration-300 -mt-42">
+        
+        {/* Logo with glow */}
+        <img
+          src="/logo3.png"
+          alt="Logo"
+          className="w-20 h-20 mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+        />
 
         {/* Title */}
-        <h1 className="text-xl sm:text-2xl font-extrabold mb-6">
+        <h1 className="text-3xl font-extrabold tracking-wide drop-shadow-sm">
           Login to CivicLens
         </h1>
 
-        {/* Google Sign-In Button */}
+        {/* Google Sign-In Button with shadow */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="w-full flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 font-semibold py-2.5 px-4 rounded-lg shadow-md transition duration-200 mb-4 text-sm sm:text-base"
+          className="w-full flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 font-semibold py-3 px-5 rounded-lg shadow-lg hover:shadow-xl transition duration-200 text-base"
         >
           <svg
             className="w-5 h-5"
@@ -50,7 +55,7 @@ export default function SignInPage() {
         </button>
 
         {/* Terms & Privacy */}
-        <p className="text-xs text-gray-500 mt-2 px-2 leading-relaxed">
+        <p className="text-xs text-gray-500 px-2 leading-relaxed">
           By signing in, you agree to our{" "}
           <a href="/terms" className="underline hover:text-gray-300">terms</a> and{" "}
           <a href="/privacy" className="underline hover:text-gray-300">privacy policy</a>.

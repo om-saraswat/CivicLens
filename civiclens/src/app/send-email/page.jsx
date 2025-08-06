@@ -103,7 +103,7 @@ export default function SendEmailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-2xl bg-[#111827] border border-gray-700 rounded-2xl shadow-2xl p-8 text-gray-100">
+      <div className="w-full max-w-2xl bg-[#111827] border border-gray-700 rounded-2xl shadow-[0_0_10px_rgba(249,249,249,0.5)] p-8 text-gray-100">
         <h1 className="text-4xl font-bold text-center mb-8 text-white">
           Send CivicLens Email
         </h1>
@@ -117,7 +117,7 @@ export default function SendEmailPage() {
             type="email"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 hover:border-3 transition-colors duration-200"
           />
         </div>
 
@@ -130,7 +130,7 @@ export default function SendEmailPage() {
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 hover:border-3 transition-colors duration-200"
           />
         </div>
 
@@ -143,7 +143,7 @@ export default function SendEmailPage() {
             rows={6}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 hover:border-3 transition-colors duration-200"
           />
         </div>
 

@@ -150,7 +150,8 @@ export default function Home() {
     <div className="min-h-screen flex flex-col md:flex-row bg-black text-white">
       <Sidebar />
       <main className="flex-1 flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
-        <div className="bg-gray-950 border border-gray-800 rounded-2xl shadow-2xl w-full max-w-xl p-10 space-y-8">
+        <div className="bg-gray-950 border border-gray-800 rounded-2xl shadow-[0_0_10px_rgba(249,249,249,0.5)] w-full max-w-xl p-10 space-y-8">
+
           <h1 className="text-3xl font-bold text-center">Report an Issue</h1>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
