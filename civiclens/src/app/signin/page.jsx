@@ -23,18 +23,20 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen bg-transparent text-white px-4 -mt-26">
-      <div className="bg-gray-950 p-8 rounded-2xl shadow-2xl w-full max-w-sm flex flex-col items-center">
+    <div className="flex justify-center items-center min-h-screen bg-black text-white px-4">
+      <div className="bg-gray-950 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-sm flex flex-col items-center text-center">
         {/* Logo */}
-        <img src="/logo3.png" alt="Logo" className="w-16 h-16 mb-4" />
+        <img src="/logo3.png" alt="Logo" className="w-14 h-14 sm:w-16 sm:h-16 mb-4" />
 
         {/* Title */}
-        <h1 className="text-2xl font-extrabold text-center mb-6">Login to CivicLens</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold mb-6">
+          Login to CivicLens
+        </h1>
 
         {/* Google Sign-In Button */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="w-full flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 font-semibold py-2.5 px-4 rounded-lg shadow-md transition duration-200 mb-4"
+          className="w-full flex items-center justify-center gap-3 bg-white text-black hover:bg-gray-200 font-semibold py-2.5 px-4 rounded-lg shadow-md transition duration-200 mb-4 text-sm sm:text-base"
         >
           <svg
             className="w-5 h-5"
@@ -47,8 +49,8 @@ export default function SignInPage() {
           Continue with Google
         </button>
 
-        {/* Terms & Privacy Text */}
-        <p className="text-xs text-gray-500 text-center mt-2 px-2">
+        {/* Terms & Privacy */}
+        <p className="text-xs text-gray-500 mt-2 px-2 leading-relaxed">
           By signing in, you agree to our{" "}
           <a href="/terms" className="underline hover:text-gray-300">terms</a> and{" "}
           <a href="/privacy" className="underline hover:text-gray-300">privacy policy</a>.

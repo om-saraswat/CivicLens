@@ -24,12 +24,12 @@ export default function Navbar() {
         {/* Right: Actions */}
         <div className="flex items-center gap-4 relative">
           {/* Theme icon (not toggling, just visual) */}
-          <button
+          {/* <button
             className="p-2 rounded-lg hover:bg-gray-800 transition"
             title="Dark mode icon"
           >
             <Moon size={20} />
-          </button>
+          </button> */}
 
           {status === "authenticated" ? (
             <div className="relative">
