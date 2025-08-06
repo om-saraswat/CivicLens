@@ -68,7 +68,7 @@ Use this format:
   "email": "official email (must end in .gov.in or .nic.in)",
   "address": "location string",
   "subject": "formal email subject",
-  "body": "formal complaint body in full sentences, ending with user name and email",
+  "body" :  "Write a formal complaint letter in full sentences, addressed to the MCD. Start with "Dear MCD," and explain the problem of illegal garbage dumping in a specific location. Describe the issue clearly like an application. Then provide the full address and include the GPS coordinates in this format: ${lat}, ${lon}. End the complaint with a polite request for action, followed by a self-introduction. On a new line, write the user's full name and email address. Do not include any date, subject line, or urgency section. Make it feel like a formal application, not like a Gmail or email. provide coordinates in different line with proper name ",  
   "lat": "${lat}",
   "lon": "${lon}"
 }

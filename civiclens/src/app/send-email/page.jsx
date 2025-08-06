@@ -15,7 +15,6 @@ export default function SendEmailPage() {
   const [departmentData, setDepartmentData] = useState(null);
 
   useEffect(() => {
-    // First try URL params
     const urlTo = searchParams.get("to");
     const urlSubject = searchParams.get("subject");
     const urlMessage = searchParams.get("message");
@@ -25,24 +24,10 @@ export default function SendEmailPage() {
     const urlLat = searchParams.get("lat");
     const urlLon = searchParams.get("lon");
 
-    console.log('🔍 URL Parameters:', {
-      to: urlTo,
-      subject: urlSubject,
-      message: urlMessage,
-      department: urlDepartment,
-      location: urlLocation,
-      address: urlAddress,
-      lat: urlLat,
-      lon: urlLon
-    });
-
-    // If URL params exist, use them
     if (urlTo || urlSubject || urlMessage) {
       setTo(urlTo || "");
       setSubject(urlSubject || "");
       setMessage(urlMessage || "");
-      
-      // Store all department data
       setDepartmentData({
         department: urlDepartment || "Unknown Department",
         email: urlTo || "",
@@ -51,24 +36,16 @@ export default function SendEmailPage() {
         lon: urlLon || ""
       });
     } else {
-      // Otherwise, try session storage
       const savedDeptData = sessionStorage.getItem('departmentData');
-      console.log('💾 Session Storage Data:', savedDeptData);
-      
       if (savedDeptData) {
         try {
           const deptData = JSON.parse(savedDeptData);
-          console.log('📋 Parsed Department Data:', deptData);
-          
           setTo(deptData.email || "");
           setSubject(deptData.subject || "");
           setMessage(deptData.body || "");
           setDepartmentData(deptData);
-          
-          // Clear session storage after using
           sessionStorage.removeItem('departmentData');
         } catch (error) {
-          console.error('❌ Error parsing session storage data:', error);
           setDepartmentData({
             department: "Unknown Department",
             email: "",
@@ -78,7 +55,6 @@ export default function SendEmailPage() {
           });
         }
       } else {
-        console.warn('⚠️ No department data found in URL params or session storage');
         setDepartmentData({
           department: "Unknown Department",
           email: "",
@@ -93,9 +69,7 @@ export default function SendEmailPage() {
   const sendEmail = async () => {
     setLoading(true);
     setStatus("Sending...");
-    
-    console.log('📤 Sending email with department data:', departmentData);
-    
+
     try {
       const res = await fetch("/api/send-email", {
         method: "POST",
@@ -134,16 +108,7 @@ export default function SendEmailPage() {
           Send CivicLens Email
         </h1>
 
-        {/* Debug Info - Remove in production */}
-        {departmentData && (
-          <div className="mb-6 p-4 bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-semibold text-yellow-400 mb-2">Debug Info:</h3>
-            <p className="text-xs text-gray-300">Department: {departmentData.department}</p>
-            <p className="text-xs text-gray-300">Address: {departmentData.address}</p>
-          </div>
-        )}
-
-        {/* Recipient */}
+        {/* Recipient Email */}
         <div className="mb-6">
           <label className="block mb-2 text-sm font-semibold text-gray-300">
             Recipient Email
@@ -182,6 +147,7 @@ export default function SendEmailPage() {
           />
         </div>
 
+        {/* Submit Button */}
         <button
           onClick={sendEmail}
           disabled={loading}
@@ -190,6 +156,7 @@ export default function SendEmailPage() {
           {loading ? "Sending..." : "Send Email"}
         </button>
 
+        {/* Status Message */}
         {status && (
           <p className="text-center text-sm mt-4 text-gray-400">{status}</p>
         )}

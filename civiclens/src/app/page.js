@@ -1,9 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "./Components/Sidebar";
+import { UploadCloud } from "lucide-react";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -13,6 +14,7 @@ export default function Home() {
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -36,6 +38,14 @@ export default function Home() {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImage(null);
+    setPreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!image) return;
@@ -50,28 +60,25 @@ export default function Home() {
         const base64String = reader.result.split(",")[1];
         const mimeType = image.type;
 
-        // 1️⃣ Step 1: Image → Description
         setStatusMessage("🔍 Analyzing image...");
         const res = await fetch("/api/process-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ base64Image: base64String, mimeType }),
         });
-        const imgData = await res.json();
 
+        const imgData = await res.json();
         if (!imgData.description) {
           setLoading(false);
           setStatusMessage("❌ Failed to analyze image.");
           return;
         }
 
-        // 2️⃣ Step 2: Get location
         setStatusMessage("📍 Getting location...");
         const location = await getLocation();
 
-        // 3️⃣ Step 3: Get department info
         setStatusMessage("🏢 Finding responsible department...");
-        const deptRes = await fetch("/api/Deptartment", { // Fixed: was "/api/Deptartment"
+        const deptRes = await fetch("/api/Deptartment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -82,31 +89,26 @@ export default function Home() {
         });
 
         const deptData = await deptRes.json();
-        console.log("🏢 Department data received:", deptData); // Debug log
-
         if (deptData.error) {
           setLoading(false);
           setStatusMessage("❌ Failed to determine department.");
           return;
         }
 
-        // 4️⃣ Store department data in session storage as backup
-        sessionStorage.setItem('departmentData', JSON.stringify(deptData));
+        sessionStorage.setItem("departmentData", JSON.stringify(deptData));
 
-        // 5️⃣ Navigate to /send-email with ALL required query params
         setStatusMessage("📧 Preparing email...");
         const query = new URLSearchParams({
           to: deptData.email || "",
           subject: deptData.subject || "",
           message: deptData.body || "",
-          department: deptData.department || "Unknown Department", // ✅ This was missing!
+          department: deptData.department || "Unknown Department",
           address: deptData.address || "",
           location: deptData.address || `Lat: ${location.lat}, Lon: ${location.lon}`,
           lat: deptData.lat || location.lat,
-          lon: deptData.lon || location.lon
+          lon: deptData.lon || location.lon,
         }).toString();
 
-        console.log("🚀 Navigating with params:", Object.fromEntries(new URLSearchParams(query)));
         router.push(`/send-email?${query}`);
       };
     } catch (err) {
@@ -126,9 +128,9 @@ export default function Home() {
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          resolve({ 
-            lat: pos.coords.latitude, 
-            lon: pos.coords.longitude 
+          resolve({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
           });
         },
         (error) => {
@@ -138,40 +140,61 @@ export default function Home() {
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 60000
+          maximumAge: 60000,
         }
       );
     });
   };
 
   return (
-    <div className="min-h-screen flex bg-transparent ">
-      <Sidebar/>
-      <main className="flex-1 flex items-center justify-center px-4 ">
-        <div className="bg-gray-950 shadow-2xl rounded-2xl p-8 w-full max-w-md text-center text-white border border-gray-800">
-          <h1 className="text-3xl font-extrabold mb-6">Report an Issue</h1>
+    <div className="min-h-screen flex flex-col md:flex-row bg-black text-white">
+      <Sidebar />
+      <main className="flex-1 flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
+        <div className="bg-gray-950 border border-gray-800 rounded-2xl shadow-2xl w-full max-w-xl p-10 space-y-8">
+          <h1 className="text-3xl font-bold text-center">Report an Issue</h1>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {preview && (
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full h-48 object-cover rounded-lg border border-gray-700"
-              />
-            )}
-
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              required
-              className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-300"
-            />
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <div className="w-full">
+              {preview ? (
+                <div className="relative w-full h-72 border border-gray-700 rounded-lg overflow-hidden">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-sm px-3 py-1 rounded-md"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="file-upload"
+                  className="flex flex-col items-center justify-center h-72 w-full border-2 border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-red-500 transition-colors"
+                >
+                  <UploadCloud className="w-12 h-12 text-gray-400 mb-3" />
+                  <span className="text-gray-400 font-medium text-sm">
+                    Click to upload image
+                  </span>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={loading || !image}
-              className={`w-full py-3 mt-2 font-semibold rounded-lg transition ${
+              className={`w-full py-3 rounded-lg font-semibold transition ${
                 loading || !image
                   ? "bg-gray-600 cursor-not-allowed"
                   : "bg-red-500 hover:bg-red-600 text-white"
@@ -182,7 +205,9 @@ export default function Home() {
           </form>
 
           {statusMessage && (
-            <p className="mt-4 text-sm text-gray-400">{statusMessage}</p>
+            <div className="text-sm text-center text-gray-400 pt-2">
+              {statusMessage}
+            </div>
           )}
         </div>
       </main>
