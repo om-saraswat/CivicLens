@@ -1,7 +1,8 @@
 // app/api/send-email/route.js
+
 import { google } from "googleapis";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../../lib/authOptions"; // ✅ Use shared config
 import { dbConnect } from "../../../lib/mongodb";
 import Complaints from "../../../models/Complaints";
 import Users from "../../../models/Users";
@@ -15,21 +16,13 @@ export async function POST(req) {
 
     const { to, subject, message, deptName, location, lat, lon } = await req.json();
 
-    // Debug logs
     console.log('📧 Send Email API - Received data:', {
-      to,
-      subject,
-      deptName,
-      location,
-      lat,
-      lon,
+      to, subject, deptName, location, lat, lon,
       messageLength: message?.length || 0
     });
 
-    // Connect to MongoDB
     await dbConnect();
 
-    // Get or create user
     let user = await Users.findOne({ email: session.user.email });
     if (!user) {
       user = await Users.create({
@@ -39,10 +32,8 @@ export async function POST(req) {
       });
     }
 
-    // Generate unique complaint number
     const complaintNo = `CMP${Date.now()}`;
 
-    // Save complaint with user reference
     const complaintData = {
       deptName: deptName || "Unknown Department",
       deptMail: to,
@@ -57,12 +48,10 @@ export async function POST(req) {
       }
     };
 
-    console.log('💾 Saving complaint to database:', complaintData);
-
     const complaint = await Complaints.create(complaintData);
     console.log('✅ Complaint saved with ID:', complaint._id);
 
-    // Send email via Gmail API
+    // Gmail API
     const oauth2Client = new google.auth.OAuth2();
     oauth2Client.setCredentials({ access_token: session.accessToken });
 
@@ -71,6 +60,7 @@ export async function POST(req) {
     const rawMessage = [
       `To: ${to}`,
       `Subject: ${subject}`,
+      "Content-Type: text/plain; charset=utf-8",
       "",
       message,
     ].join("\n");
@@ -93,11 +83,12 @@ export async function POST(req) {
       complaintNo,
       savedDepartment: complaintData.deptName 
     }), { status: 200 });
-    
+
   } catch (err) {
     console.error('❌ Send Email API Error:', err);
     return new Response(JSON.stringify({ 
       error: err.message,
       stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     }), { status: 500 });
-  }}
+  }
+}
