@@ -38,7 +38,6 @@ export default function SendEmailPage() {
       const data = await res.json();
       if (data.success) {
         toast.success("Complaint registered successfully!");
-        // Wait for 2 seconds before redirecting
         setTimeout(() => {
           router.push("/");
         }, 2000);
@@ -53,55 +52,61 @@ export default function SendEmailPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100 p-6">
-      <div className="w-full max-w-xl bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
-        <h1 className="text-3xl font-bold mb-6 text-center text-yellow-400">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl bg-[#111827] border border-gray-700 rounded-2xl shadow-2xl p-8 text-gray-100">
+        <h1 className="text-4xl font-bold text-center mb-8 text-white">
           Send CivicLens Email
         </h1>
 
         {/* Recipient */}
-        <label className="block mb-2 text-sm font-medium text-gray-300">
-          Recipient Email
-        </label>
-        <input
-          className="w-full p-3 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          type="email"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
-        />
+        <div className="mb-6">
+          <label className="block mb-2 text-sm font-semibold text-gray-300">
+            Recipient Email
+          </label>
+          <input
+            type="email"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
         {/* Subject */}
-        <label className="block mb-2 text-sm font-medium text-gray-300">
-          Subject
-        </label>
-        <input
-          className="w-full p-3 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
+        <div className="mb-6">
+          <label className="block mb-2 text-sm font-semibold text-gray-300">
+            Subject
+          </label>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
         {/* Message */}
-        <label className="block mb-2 text-sm font-medium text-gray-300">
-          Message
-        </label>
-        <textarea
-          className="w-full p-3 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows="6"
-        />
+        <div className="mb-6">
+          <label className="block mb-2 text-sm font-semibold text-gray-300">
+            Message
+          </label>
+          <textarea
+            rows={6}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
         <button
           onClick={sendEmail}
-          className="w-full py-3 mt-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-lg transition"
           disabled={loading}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200"
         >
           {loading ? "Sending..." : "Send Email"}
         </button>
 
         {status && (
-          <p className="mt-4 text-center text-sm text-gray-300">{status}</p>
+          <p className="text-center text-sm mt-4 text-gray-400">{status}</p>
         )}
       </div>
     </div>

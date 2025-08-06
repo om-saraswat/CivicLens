@@ -139,7 +139,7 @@ export default function Home() {
               className={`w-full py-3 mt-2 font-semibold rounded-lg transition ${
                 loading
                   ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-yellow-500 hover:bg-yellow-600 text-gray-900"
+                  : "bg-red-500 hover:bg-red-600 text-white"
               }`}
             >
               {loading ? "Processing..." : "Submit Issue"}
