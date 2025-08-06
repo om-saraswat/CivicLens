@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { dbConnect } from "../../../../lib/mongodb";
 import User from "../../../../models/Users";
 
-export const authOptions = {
+const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -12,8 +12,8 @@ export const authOptions = {
         params: {
           scope:
             "openid email profile https://www.googleapis.com/auth/gmail.send",
-          access_type: "offline", // Needed to get refresh token
-          prompt: "consent", // Ensure refresh token is returned on first login
+          access_type: "offline",
+          prompt: "consent",
         },
       },
     }),
@@ -32,12 +32,11 @@ export const authOptions = {
       return true;
     },
     async jwt({ token, account, user }) {
-      // Initial sign-in
       if (account && user) {
         token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token; // Save for later
+        token.refreshToken = account.refresh_token;
         token.expiresAt = Date.now() + account.expires_in * 1000;
-        token.email = user.email; // Store email in token
+        token.email = user.email;
       }
       return token;
     },
