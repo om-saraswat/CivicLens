@@ -44,20 +44,28 @@ A web-based platform that allows users to report public issues such as garbage d
 ---
 
 ## 📁 Project Structure
-/app/api
-├── complaints/route.js # Fetch user complaints
-├── dept/route.js # Generate department + complaint using AI
-├── process-image/route.js # Analyze uploaded image
-├── send-email/route.js # Send email + save complaint
+## 📁 Project Structure
+
+```bash
+/app
+  /api
+    /complaints
+      route.js        # Fetch user complaints
+    /dept
+      route.js        # Generate department + complaint using AI
+    /process-image
+      route.js        # Analyze uploaded image
+    /send-email
+      route.js        # Send email + save complaint
 
 /lib
-├── mongodb.js # DB connection
-├── authOptions.js # Auth config
+  mongodb.js          # Database connection
+  authOptions.js      # Authentication config
 
 /models
-├── Complaints.js
-├── Users.js
-
+  Complaints.js
+  Users.js
+```
 
 
 ---
