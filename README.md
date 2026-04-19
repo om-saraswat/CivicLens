@@ -180,12 +180,6 @@ Feel free to contribute by:
 
 ---
 
-## 📄 License
-
-This project is open-source and available under the MIT License.
-
----
-
 ## 💡 Author
 
 Developed to simplify civic issue reporting and improve communication between citizens and authorities.
